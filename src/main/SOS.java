@@ -1,10 +1,10 @@
 package main;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.InputMismatchException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author github.com/butburg (EW) on Okt 2021
@@ -15,28 +15,44 @@ public class SOS {
     private int K;
     private final int sumS;
     private boolean[][] U;
-    private ArrayList<Integer> givenTs;
-    private ArrayList<Integer> solutionValues = new ArrayList<>();
-    private ArrayList<Integer> selection = new ArrayList<>();
+    private List<Integer> givenTs;
+    private List<Integer> solutionValues = new ArrayList<>();
+    private List<Integer> selection = new ArrayList<>();
 
-    public SOS(ArrayList<Integer> givenTs) throws InputMismatchException {
+
+    /**
+     * Sum of Selections
+     *
+     * @param instance the searched sum K, the count of the sequence as n, the sequence of given positive integers
+     * @throws InputMismatchException if the instance are not in the correct form:
+     *                                negative, n is not equal to  given sequence length
+     */
+    public SOS(List<Integer> instance) throws InputMismatchException {
         //checks
-        int tempK = givenTs.remove(0);
-        int tempnLength = givenTs.remove(0);
-        if (tempnLength != givenTs.size())
+        int tempK = instance.remove(0);
+        int tempnLength = instance.remove(0);
+        if (tempnLength != instance.size())
             throw new InputMismatchException("Given n in file is not equal to number of Integers!");
-        ArrayList<Integer> tempGivenTs = new ArrayList<>(givenTs);
+        List<Integer> tempGivenTs = new ArrayList<>(instance);
         Collections.sort(tempGivenTs);
-        if (givenTs.get(0) < 0 || K < 0) throw new IllegalArgumentException("No negative numbers allowed!");
+        if (tempGivenTs.get(0) < 0 || tempK < 0)
+            throw new IllegalArgumentException("No negative numbers allowed!");
         //inits
         K = tempK;
-        nLength = tempnLength;
-        this.givenTs = tempGivenTs;
-        sumS = givenTs.stream().mapToInt(s -> s).sum(); // get S, sum of all ts
+        // sort out t bigger than k
+        this.givenTs = tempGivenTs.stream().filter(s -> s <= K).collect(Collectors.toList());
+        nLength = this.givenTs.size(); //tempnLength;
+        sumS = this.givenTs.stream().mapToInt(s -> s).sum(); // get S, sum of all ts
         U = new boolean[nLength + 1][sumS + 1]; // build false table, add empty top row and add true zero col (with +1)
 
     }
 
+    /**
+     * related to b)
+     * Calculates U
+     *
+     * @return the table U with the true false matrix for [n] × [S], n=given ts, S range from 0 to [sum of all ts]
+     */
     public boolean[][] calculateU() {
         U[0][0] = true;//set S[0:0] to True, because 0 can be done with empty Sequence
         for (int n = 1; n <= nLength; n++) {  //ignore first row, will always be false except the first entry, S[0:0] = 0 is always possible
@@ -55,6 +71,11 @@ public class SOS {
         return U;
     }
 
+    /**
+     * reads the table U, where ever in a col is at least one true,
+     * this number/index of the col can be build with the sequence of ts.
+     * so its part of the solution
+     */
     public void saveSolutions() {
         for (int s = 0; s <= sumS; s++) {
             for (int i = 0; i <= nLength; i++) {
@@ -64,6 +85,25 @@ public class SOS {
                 }
             }
         }
+    }
+
+    public List<Integer> backtraceUsedSequence() {
+        List<Integer> result = new ArrayList<>();
+        int n = nLength;
+        int col = K;
+        while (col != 0) {
+            if (U[--n][col]) {
+                System.out.println(n+" - "+col);
+                if (!U[n - 1][col]) {
+                    result.add(givenTs.get(n));
+                    col -= givenTs.get(n);
+                    n--;
+                }
+            } else col -= 1;
+            System.out.print(givenTs.get(n));
+            System.out.println("c"+col);
+        }
+        return result;
     }
 
     public boolean checkK() {
@@ -78,15 +118,15 @@ public class SOS {
         return sumS;
     }
 
-    public ArrayList<Integer> getGivenTs() {
+    public List<Integer> getGivenTs() {
         return new ArrayList<>(givenTs);
     }
 
-    public ArrayList<Integer> getSolutionValues() {
+    public List<Integer> getSolutionValues() {
         return new ArrayList<>(solutionValues);
     }
 
-    public ArrayList<Integer> getSelection() {
+    public List<Integer> getSelection() {
         return new ArrayList<>(selection);
     }
 

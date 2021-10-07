@@ -42,8 +42,11 @@ public class Main {
 
         for (SOS s : sosse) {
             System.out.println("Calculating for t(i): " + s.getGivenTs());
+            System.out.print("INSTANCE "+s.getnLength() + " " + s.getK()+ ": ");
+            s.getGivenTs().forEach(i -> System.out.print((i +" ")));
+            System.out.println();
             s.calculateU();
-            if(s.getSumS()<15){
+            if(s.getSumS()<1){
                 System.out.print("-");
                 for (int j = 0; j <= s.getSumS(); j++) {
                     System.out.printf("%3d", j);
@@ -59,6 +62,7 @@ public class Main {
                 }
             }
             System.out.println(s.checkK() ? "YES" : "NO");
+            System.out.println(s.backtraceUsedSequence());
         }
 
 
