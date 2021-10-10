@@ -42,52 +42,20 @@ public class Main {
         }
 
         for (SOS s : sosse) {
-            System.out.println("Calculating for t(i): " + s.getGivenTs());
             System.out.print("INSTANCE " + s.getnLength() + " " + s.getK() + ": ");
-            s.getGivenTs().forEach(i -> System.out.print((i + " ")));
+            s.getTs(true).forEach(i -> System.out.print((i + " ")));
             System.out.println();
             s.calculateU();
-            printMatrix(s);
+
             System.out.println(s.checkK() ? "YES" : "NO");
             if (s.checkK()) {
-                for (Map.Entry<Integer, Integer> e : s.backtrace().entrySet()){
-                    System.out.print(e.getValue() +"["+ e.getKey() + "]" + " ");
+                for (Map.Entry<Integer, Integer> e : s.backtrace().entrySet()) {
+                    System.out.print(e.getValue() + "[" + e.getKey() + "]" + " ");
                 }
                 System.out.println();
             }
         }
 
 
-//    //output the results into a file:
-//        try(
-//    PrintWriter out = new PrintWriter(fileOutput))
-//
-//    {
-//        for (String s : resultsInsert) {
-//            //System.out.println("check:" + s);
-//            out.println(s);
-//        }
-//        for (String s : resultsLookup) {
-//            System.out.println("check2:" + s);
-//            out.println(s);
-//        }
-    }
-
-    private static void printMatrix(SOS s) {
-        if (s.getSumS() < 15) {
-            System.out.print("-");
-            for (int j = 0; j <= s.getSumS(); j++) {
-                System.out.printf("%3d", j);
-            }
-            System.out.println();
-            for (int i = 1; i <= s.getnLength(); i++) {
-                System.out.print(i + ": ");
-                for (int j = 0; j <= s.getSumS(); j++) {
-                    System.out.print(s.getU(i, j) ? "1  " : "0  ");
-                }
-                System.out.println();
-
-            }
-        }
     }
 }
