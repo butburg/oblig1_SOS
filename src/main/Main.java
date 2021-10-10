@@ -2,8 +2,8 @@ package main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -23,8 +23,10 @@ public class Main {
         ArrayList<Integer> intRows = new ArrayList<>();
         ArrayList<SOS> sosse = new ArrayList<>();
 
+        // read file
         try {
             while (in.hasNextLine()) {
+                // read numbers per line into new SOS
                 String row = in.nextLine();
                 Scanner scRow = new Scanner(row);
                 while (scRow.hasNextInt()) {
@@ -41,21 +43,43 @@ public class Main {
             in.close();
         }
 
-        for (SOS s : sosse) {
-            System.out.print("INSTANCE " + s.getnLength() + " " + s.getK() + ": ");
-            s.getTs(true).forEach(i -> System.out.print((i + " ")));
-            System.out.println();
-            s.calculateU();
+        //output the results into a file:
+        try (PrintWriter out = new PrintWriter(fileOutput)) {
+            for (SOS s : sosse) {
+                out.print("INSTANCE " + s.getnLength() + " " + s.getK() + ": ");
+                s.getTs(true).forEach(i -> out.print((i + " ")));
+                out.println();
+                // calculate U Matrix
+                s.calculateU();
+                // is K in given sequence
+                out.println(s.checkK() ? "YES" : "NO");
+                //if yes, print used numbers to sum K in index order ASC
+                if (s.checkK()) {
+                    s.backtrace().forEach((key, value) -> out.print(value + "[" + key + "]" + " "));
+                    out.println();
+                }
 
-            System.out.println(s.checkK() ? "YES" : "NO");
-            if (s.checkK()) {
-                for (Map.Entry<Integer, Integer> e : s.backtrace().entrySet()) {
-                    System.out.print(e.getValue() + "[" + e.getKey() + "]" + " ");
+            }//end for sosse
+        }//end try
+
+
+    }
+
+    private static void printMatrix(SOS s) {
+        if (s.getSumS() < 15) {
+            System.out.print("-");
+            for (int j = 0; j <= s.getSumS(); j++) {
+                System.out.printf("%3d", j);
+            }
+            System.out.println();
+            for (int i = 1; i <= s.getnLength(); i++) {
+                System.out.print(i + ": ");
+                for (int j = 0; j <= s.getSumS(); j++) {
+                    System.out.print(s.getU(i, j) ? "1  " : "0  ");
                 }
                 System.out.println();
             }
         }
-
-
     }
+
 }

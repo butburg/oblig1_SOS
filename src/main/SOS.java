@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 public class SOS {
 
     private final int nLength;
-    private int K;
     private final int sumS;
+    private int K;
     private boolean[][] U;
     private List<Integer> calculatedTs;
     private List<Integer> givenTs;
@@ -46,29 +46,31 @@ public class SOS {
 
     }
 
-    /**
-     * related to b)
-     * Calculates U
-     *
-     * @return the table U with the true false matrix for [n] × [S], n=given ts, S range from 0 to [sum of all ts]
-     */
+
     public boolean[][] calculateU() {
         U[0][0] = true;//set S[0:0] to True, because 0 can be done with empty Sequence
-        for (int n = 1; n <= nLength; n++) {  //ignore first row, will always be false except the first entry, S[0:0] = 0 is always possible
-            for (int s = 0; s <= sumS; s++) { //loop cols in row
-                if (calculatedTs.get(n - 1) > s) {//n bigger than s
-                    U[n][s] = U[n - 1][s];//get from row above
-                } else {//field is the one row above minus value n
-                    if (U[n - 1][s]) //if row above is true, also this one is true
-                        U[n][s] = true;
-                    else //else go n steps back an lock in row above if its true
-                        U[n][s] = U[n - 1][s - calculatedTs.get(n - 1)];
-                }
-            }//for entry
-        }//for row
-        saveSolutions();
-        return U;
+        //ignore first row, will always be false except the first entry, S[0:0] = 0 is always possible
+        return calculateURec(1, 0);
     }
+
+    private boolean[][] calculateURec(int n, int s) {
+        if (n > nLength) {
+            saveSolutions();
+            return U;
+        }
+        if (s > sumS) return calculateURec(n + 1, 0);
+
+        if (calculatedTs.get(n - 1) > s) {//n bigger than s
+            U[n][s] = U[n - 1][s];//get from row above
+        } else {//field is the one row above minus value n
+            if (U[n - 1][s]) //if row above is true, also this one is true
+                U[n][s] = true;
+            else //else go n steps back an lock in row above if its true
+                U[n][s] = U[n - 1][s - calculatedTs.get(n - 1)];
+        }
+        return calculateURec(n, s + 1);
+    }
+
 
     /**
      * reads the table U, where ever in a col is at least one true,
@@ -104,6 +106,29 @@ public class SOS {
         return backtraceRec(sequence, n - 1, col - calculatedTs.get(n - 1));
     }
 
+    /**
+     * related to b)
+     * Calculates U
+     *
+     * @return the table U with the true false matrix for [n] × [S], n=given ts, S range from 0 to [sum of all ts]
+     */
+    public boolean[][] calculateUIterative() {
+        U[0][0] = true;//set S[0:0] to True, because 0 can be done with empty Sequence
+        for (int n = 1; n <= nLength; n++) {  //ignore first row, will always be false except the first entry, S[0:0] = 0 is always possible
+            for (int s = 0; s <= sumS; s++) { //loop cols in row
+                if (calculatedTs.get(n - 1) > s) {//n bigger than s
+                    U[n][s] = U[n - 1][s];//get from row above
+                } else {//field is the one row above minus value n
+                    if (U[n - 1][s]) //if row above is true, also this one is true
+                        U[n][s] = true;
+                    else //else go n steps back an lock in row above if its true
+                        U[n][s] = U[n - 1][s - calculatedTs.get(n - 1)];
+                }
+            }//for entry
+        }//for row
+        saveSolutions();
+        return U;
+    }
 
     public boolean checkK() {
         return solutionValues.contains(K);
@@ -133,12 +158,15 @@ public class SOS {
         return new ArrayList<>(selection);
     }
 
-
-    public void setK(int k) {
-        K = k;
+    public boolean getU(int n, int s) {
+        return U[n][s];
     }
 
     public int getK() {
         return K;
+    }
+
+    public void setK(int k) {
+        K = k;
     }
 }
