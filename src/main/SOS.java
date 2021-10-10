@@ -87,24 +87,25 @@ public class SOS {
         }
     }
 
-    public List<Integer> backtraceUsedSequence() {
-        List<Integer> result = new ArrayList<>();
+    public List<Integer> backtrace(){
+        List<Integer> sequence = new ArrayList<>();
         int n = nLength;
         int col = K;
-        while (col != 0) {
-            if (U[--n][col]) {
-                System.out.println(n+" - "+col);
-                if (!U[n - 1][col]) {
-                    result.add(givenTs.get(n));
-                    col -= givenTs.get(n);
-                    n--;
-                }
-            } else col -= 1;
-            System.out.print(givenTs.get(n));
-            System.out.println("c"+col);
-        }
-        return result;
+        if (n < 1) throw new InputMismatchException("No solution that can be backtrace.");
+        return backtrace(sequence,n,col);
     }
+
+    public List<Integer> backtrace(List<Integer> sequence, int n, int col){
+        if(col == 0) return sequence;
+        if (!U[n][col]) return sequence;
+        while(U[n-1][col]){
+            n = n -1;
+        }
+        System.out.println(givenTs.get(n-1));
+        sequence.add(givenTs.get(n-1));
+        return backtrace(sequence,n-1,col-givenTs.get(n-1));
+    }
+
 
     public boolean checkK() {
         return solutionValues.contains(K);

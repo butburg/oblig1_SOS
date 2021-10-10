@@ -42,27 +42,16 @@ public class Main {
 
         for (SOS s : sosse) {
             System.out.println("Calculating for t(i): " + s.getGivenTs());
-            System.out.print("INSTANCE "+s.getnLength() + " " + s.getK()+ ": ");
-            s.getGivenTs().forEach(i -> System.out.print((i +" ")));
+            System.out.print("INSTANCE " + s.getnLength() + " " + s.getK() + ": ");
+            s.getGivenTs().forEach(i -> System.out.print((i + " ")));
             System.out.println();
             s.calculateU();
-            if(s.getSumS()<1){
-                System.out.print("-");
-                for (int j = 0; j <= s.getSumS(); j++) {
-                    System.out.printf("%3d", j);
-                }
-                System.out.println();
-                for (int i = 1; i <= s.getnLength(); i++) {
-                    System.out.print(s.getGivenTs().get(i - 1) + ": ");
-                    for (int j = 0; j <= s.getSumS(); j++) {
-                        System.out.print(s.getU(i, j) ? "1  " : "0  ");
-                    }
-                    System.out.println();
-
-                }
-            }
+            printMatrix(s);
             System.out.println(s.checkK() ? "YES" : "NO");
-            System.out.println(s.backtraceUsedSequence());
+            if (s.checkK()) {
+                System.out.println(s.backtrace());
+                printMatrix(s);
+            }
         }
 
 
@@ -79,5 +68,23 @@ public class Main {
 //            System.out.println("check2:" + s);
 //            out.println(s);
 //        }
+    }
+
+    private static void printMatrix(SOS s) {
+        if (s.getSumS() < 15) {
+            System.out.print("-");
+            for (int j = 0; j <= s.getSumS(); j++) {
+                System.out.printf("%3d", j);
+            }
+            System.out.println();
+            for (int i = 1; i <= s.getnLength(); i++) {
+                System.out.print(i + ": ");
+                for (int j = 0; j <= s.getSumS(); j++) {
+                    System.out.print(s.getU(i, j) ? "1  " : "0  ");
+                }
+                System.out.println();
+
+            }
+        }
     }
 }
