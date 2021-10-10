@@ -1,5 +1,9 @@
 package main;
 
+import main.sos.MemoizedSOS;
+import main.sos.SOS;
+import main.sos.SimpleSOS;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -8,8 +12,16 @@ import java.util.Scanner;
 
 public class Main {
 
+    /**
+     *
+     */
     static boolean useSimpleSOS = false;
 
+    /**
+     *
+     * @param args
+     * @throws FileNotFoundException
+     */
     public static void main(String[] args) throws FileNotFoundException {
         if (args.length != 2) {
             System.out.println("Wrong number of command line arguments. 2 arguments needed. \nExample: >java main.Main inFile.txt outFile.txt");

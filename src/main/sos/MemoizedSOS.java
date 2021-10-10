@@ -1,4 +1,4 @@
-package main;
+package main.sos;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -10,12 +10,12 @@ public class MemoizedSOS implements SOS {
 
     private final int nLength;
     private final int sumS;
-    private int K;
+    private final int K;
     private boolean[][] U;
     private List<Integer> givenTs;
     private List<Integer> calculatedTs;
     private List<Integer> solutionValues = new ArrayList<>();
-    private Map<Integer, Integer> sequence = new TreeMap<Integer, Integer>();
+    private Map<Integer, Integer> sequence = new TreeMap<>();
 
     /**
      * Sum of Selections
@@ -59,12 +59,22 @@ public class MemoizedSOS implements SOS {
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
     private boolean[][] calculateU() {
         boolean[][] tableU = calculateURec(1, 0);
         saveSolutions();
         return tableU;
     }
 
+    /**
+     *
+     * @param n
+     * @param s
+     * @return
+     */
     private boolean[][] calculateURec(int n, int s) {
         if (n > nLength) {
             return U;
@@ -99,7 +109,9 @@ public class MemoizedSOS implements SOS {
         }
     }
 
-
+    /**
+     *
+     */
     public void calculateSequence() {
         int n = nLength;
         int col = K;
@@ -107,6 +119,12 @@ public class MemoizedSOS implements SOS {
         calcSequenceRec(n, col);
     }
 
+    /**
+     *
+     * @param n
+     * @param col
+     * @return
+     */
     private Map<Integer, Integer> calcSequenceRec(int n, int col) {
         if (col == 0) return sequence;
         if (!U[n][col]) return sequence;
@@ -136,6 +154,10 @@ public class MemoizedSOS implements SOS {
         return U;
     }
 
+    /**
+     *
+     * @return
+     */
     public String printMatrixU() {
         StringBuilder res = new StringBuilder();
         if (sumS < 15) {
@@ -155,25 +177,45 @@ public class MemoizedSOS implements SOS {
         return res.toString();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean checkK() {
         return solutionValues.contains(K);
     }
 
-
+    /**
+     *
+     * @return
+     */
     public int getSumS() {
         return sumS;
     }
 
-
+    /**
+     *
+     * @param fullList
+     * @return
+     */
     public List<Integer> getTs(boolean fullList) {
         return fullList ? new ArrayList<>(givenTs) : new ArrayList<>(calculatedTs);
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Integer> getSolutionValues() {
         return new ArrayList<>(solutionValues);
     }
 
-
+    /**
+     *
+     * @param n
+     * @param s
+     * @return
+     */
     public boolean getU(int n, int s) {
         return U[n][s];
     }

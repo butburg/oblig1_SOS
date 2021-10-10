@@ -1,4 +1,4 @@
-package main;
+package main.sos;
 
 import java.util.List;
 import java.util.Map;
@@ -8,18 +8,33 @@ import java.util.Map;
  */
 public interface SOS {
 
-
+    /**
+     *
+     * @return
+     */
     boolean calculateSOS();
 
-
+    /**
+     *
+     * @return
+     */
     int getnLength();
 
-
+    /**
+     *
+     * @return
+     */
     List<Integer> getTs();
 
-
+    /**
+     *
+     * @return
+     */
     int getK();
 
-
+    /**
+     *
+     * @return
+     */
     Map<Integer, Integer> getSequence();
 }

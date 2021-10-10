@@ -1,4 +1,4 @@
-package main;
+package main.sos;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public class SimpleSOS implements SOS {
 
     private final int nLength;
-    private int K;
+    private final int K;
     private List<Integer> calculatedTs;
     private Map<Integer, Integer> U = new TreeMap<>();
 
@@ -42,6 +42,13 @@ public class SimpleSOS implements SOS {
         return calculateURec(0, 0, U);
     }
 
+    /**
+     *
+     * @param index
+     * @param currentSum
+     * @param result
+     * @return
+     */
     private boolean calculateURec(int index, int currentSum, Map<Integer, Integer> result) {
         if (index >= nLength) {
             return currentSum == K;
