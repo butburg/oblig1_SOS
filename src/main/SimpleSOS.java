@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 /**
  * @author github.com/butburg (EW) on Okt 2021
  */
-public class SimpleSOS {
+public class SimpleSOS implements SOS {
 
     private final int nLength;
     private int K;
@@ -37,7 +37,8 @@ public class SimpleSOS {
     }
 
 
-    public boolean calculateU() {
+    @Override
+    public boolean calculateSOS() {
         return calculateURec(0, 0, U);
     }
 
@@ -55,18 +56,22 @@ public class SimpleSOS {
     }
 
 
-    public Map<Integer, Integer> getU() {
+    @Override
+    public Map<Integer, Integer> getSequence() {
         return U;
     }
 
+    @Override
     public int getnLength() {
         return nLength;
     }
 
+    @Override
     public List<Integer> getTs() {
         return new ArrayList<>(calculatedTs);
     }
 
+    @Override
     public int getK() {
         return K;
     }
