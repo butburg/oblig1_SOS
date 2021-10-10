@@ -1,4 +1,4 @@
-package main.sos;
+package main;
 
 import java.util.List;
 import java.util.Map;

@@ -1,9 +1,5 @@
 package main;
 
-import main.sos.MemoizedSOS;
-import main.sos.SOS;
-import main.sos.SimpleSOS;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -18,7 +14,7 @@ public class Main {
      * OR
      * task c), a top-down MemoizedSOS [false]
      */
-    static boolean useSimpleSOS = true;
+    static boolean useSimpleSOS = false;
 
     /**
      * The main method to start the programm
@@ -88,7 +84,9 @@ public class Main {
                     System.out.println();
                     out.println();
                 }
-                // if(s instanceof MemoizedSOS) System.out.println(((MemoizedSOS) s).printMatrixU());
+                if (s instanceof MemoizedSOS) System.out.println(((MemoizedSOS) s).printMatrixU(20));
+                System.out.println();
+                out.println();
             }
         }//end try
 

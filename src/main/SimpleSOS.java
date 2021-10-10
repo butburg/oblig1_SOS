@@ -1,10 +1,12 @@
-package main.sos;
+package main;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * @author github.com/butburg (EW) on Okt 2021
+ * <p>
+ * according to task b)
  */
 public class SimpleSOS implements SOS {
 
@@ -12,6 +14,10 @@ public class SimpleSOS implements SOS {
     private final int K;
     private List<Integer> givenTs;
     private List<Integer> calculatedTs;
+    /**
+     * here I don't use a table or array but I init a TreeMap to store the selection
+     * itself as a pair of the key with the index of t and the value as the value t
+     */
     private Map<Integer, Integer> U = new TreeMap<>();
 
     /**
