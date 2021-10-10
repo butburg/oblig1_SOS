@@ -22,6 +22,7 @@ public class Main {
 
         ArrayList<Integer> intRows = new ArrayList<>();
         ArrayList<SOS> sosse = new ArrayList<>();
+        ArrayList<SimpleSOS> simpleSosse = new ArrayList<>();
 
         // read file
         try {
@@ -36,6 +37,7 @@ public class Main {
                 if (!intRows.isEmpty()) {
                     //System.out.println("Reading: " + intRows);
                     sosse.add(new SOS(intRows));
+                    simpleSosse.add(new SimpleSOS(intRows));
                 }
                 intRows.clear();
             }
@@ -45,6 +47,7 @@ public class Main {
 
         //output the results into a file:
         try (PrintWriter out = new PrintWriter(fileOutput)) {
+            //use memoized calculation
             for (SOS s : sosse) {
                 out.print("INSTANCE " + s.getnLength() + " " + s.getK() + ": ");
                 s.getTs(true).forEach(i -> out.print((i + " ")));
@@ -60,6 +63,13 @@ public class Main {
                 }
 
             }//end for sosse
+            //use simple calculation
+            for (SimpleSOS ss : simpleSosse) {
+                System.out.print("Simple SOS INSTANCE " + ss.getnLength() + " " + ss.getK() + ": ");
+                ss.getTs().forEach(i -> System.out.print((i + " ")));
+                System.out.println();
+                System.out.println(ss.calculateU() ? "YES" : "NO");
+            }
         }//end try
 
 

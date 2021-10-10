@@ -27,11 +27,12 @@ public class SOS {
      */
     public SOS(List<Integer> instance) throws InputMismatchException {
         //checks
-        int tempK = instance.remove(0);
-        int tempnLength = instance.remove(0);
-        if (tempnLength != instance.size())
-            throw new InputMismatchException("Given n in file is not equal to number of Integers!");
         List<Integer> tempGivenTs = new ArrayList<>(instance);
+        int tempK = tempGivenTs.remove(0);
+        int tempnLength = tempGivenTs.remove(0);
+        if (tempnLength != tempGivenTs.size())
+            throw new InputMismatchException("Given n in file is not equal to number of Integers!");
+
         this.givenTs = tempGivenTs;
         Collections.sort(tempGivenTs);
         if (tempGivenTs.get(0) < 0 || tempK < 0)
