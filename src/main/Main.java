@@ -13,14 +13,18 @@ import java.util.Scanner;
 public class Main {
 
     /**
-     *
+     * Decides the us of SOS Instance for
+     * task b), a bottom-um SimpleSOS [true]
+     * OR
+     * task c), a top-down MemoizedSOS [false]
      */
-    static boolean useSimpleSOS = false;
+    static boolean useSimpleSOS = true;
 
     /**
+     * The main method to start the programm
      *
-     * @param args
-     * @throws FileNotFoundException
+     * @param args expects 2 arguments, the filename of the file to read from and of the file to write into
+     * @throws FileNotFoundException if the scanner can't read the file or can't write the output file
      */
     public static void main(String[] args) throws FileNotFoundException {
         if (args.length != 2) {

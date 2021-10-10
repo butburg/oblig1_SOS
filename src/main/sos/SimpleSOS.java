@@ -10,6 +10,7 @@ public class SimpleSOS implements SOS {
 
     private final int nLength;
     private final int K;
+    private List<Integer> givenTs;
     private List<Integer> calculatedTs;
     private Map<Integer, Integer> U = new TreeMap<>();
 
@@ -27,6 +28,7 @@ public class SimpleSOS implements SOS {
         int tempnLength = tempGivenTs.remove(0);
         if (tempnLength != tempGivenTs.size())
             throw new InputMismatchException("Given n in file is not equal to number of Integers!");
+        this.givenTs = tempGivenTs;
         Collections.sort(tempGivenTs);
         if (tempGivenTs.get(0) < 0 || tempK < 0)
             throw new IllegalArgumentException("No negative numbers allowed!");
@@ -43,11 +45,13 @@ public class SimpleSOS implements SOS {
     }
 
     /**
+     * This will recursive call itself in a form of tree. There will be more than one path end in the same result.
+     * It always checks the path with adding the next integer or not.
      *
-     * @param index
-     * @param currentSum
-     * @param result
-     * @return
+     * @param index      the index of the t's
+     * @param currentSum the actual sum from the subsequence
+     * @param result     the Map that contains the used sequence, in case it resolves in a true with the index of t as key
+     * @return true, if the given K can be calculated with a subsequence, false otherwise
      */
     private boolean calculateURec(int index, int currentSum, Map<Integer, Integer> result) {
         if (index >= nLength) {
@@ -70,12 +74,17 @@ public class SimpleSOS implements SOS {
 
     @Override
     public int getnLength() {
-        return nLength;
+        return givenTs.size();
+    }
+
+    @Override
+    public List<Integer> getTs(boolean calculatedList) {
+        return calculatedList ? new ArrayList<>(calculatedTs) : new ArrayList<>(givenTs);
     }
 
     @Override
     public List<Integer> getTs() {
-        return new ArrayList<>(calculatedTs);
+        return new ArrayList<>(givenTs);
     }
 
     @Override

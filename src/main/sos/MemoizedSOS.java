@@ -18,11 +18,12 @@ public class MemoizedSOS implements SOS {
     private Map<Integer, Integer> sequence = new TreeMap<>();
 
     /**
-     * Sum of Selections
+     * Sum of Selections with a recursive, memoized algorithm
      *
-     * @param instance the searched sum K, the count of the sequence as n, the sequence of given positive integers
+     * @param instance the searched sum K + the count of the sequence as n + the sequence of given positive integers
+     *                 = all in one list in this order
      * @throws InputMismatchException if the instance are not in the correct form:
-     *                                negative, n is not equal to  given sequence length
+     *                                negative or n is not equal to given sequence length
      */
     public MemoizedSOS(List<Integer> instance) throws InputMismatchException {
         //checks
@@ -49,8 +50,6 @@ public class MemoizedSOS implements SOS {
 
     @Override
     public boolean calculateSOS() {
-        U[0][0] = true;//set S[0:0] to True, because 0 can be done with empty Sequence
-        //ignore first row, will always be false except the first entry, S[0:0] = 0 is always possible
         calculateU();
         if (checkK()) {
             calculateSequence();
@@ -60,20 +59,30 @@ public class MemoizedSOS implements SOS {
     }
 
     /**
+     * will call the recursive method with init values, ignore first row(always false) that is only added
+     * for the termination of the algorithm
+     * set U[0:0] to True, because the 0 can be done with an empty Sequence, means it have to return true
      *
-     * @return
+     * @return a table U with dimension [n:S] and true or false entries, used for solution finding
      */
     private boolean[][] calculateU() {
+        U[0][0] = true;
         boolean[][] tableU = calculateURec(1, 0);
         saveSolutions();
         return tableU;
     }
 
     /**
+     * actual recursive method, when last n/row is reached stop. when last s/col/sum is reached, got to next
+     * col. copy the value to the same like the row is above until or actual t(the value from the
+     * actual row) is not bigger than col s.
+     * otherwise we check the field above, if its true we set the actual field also true.
+     * otherwise we check, if the field one above and s - t (sum minus the actual t) is true or false
+     * and set the actual field accordingly.
      *
-     * @param n
-     * @param s
-     * @return
+     * @param n the actual row/index from or t's from 1 to n
+     * @param s the actual col/sum value from 0 to the sum of all t's (e.g. t[1,2]: 0,1,2,3)
+     * @return the true false matrix U
      */
     private boolean[][] calculateURec(int n, int s) {
         if (n > nLength) {
@@ -94,6 +103,7 @@ public class MemoizedSOS implements SOS {
 
 
     /**
+     * look up
      * reads the table U, where ever in a col is at least one true,
      * this number/index of the col can be build with the sequence of ts.
      * so its part of the solution
@@ -110,7 +120,9 @@ public class MemoizedSOS implements SOS {
     }
 
     /**
-     *
+     * check table u, in every col that has an true in only one row, it means the according number of the col can be
+     * build with a subset, so its a possible K
+     * call recursive method with inits that will save all possible solutions in sequence
      */
     public void calculateSequence() {
         int n = nLength;
@@ -120,10 +132,12 @@ public class MemoizedSOS implements SOS {
     }
 
     /**
+     * the recursive method
      *
-     * @param n
-     * @param col
-     * @return
+     * @param n   the actual row/index from or t's from n to 0
+     * @param col the actual col/sum value from the sum of all t's to 0
+     * @return a sequence with all values u can build with the given sequence / all possible Ks
+     * and there index from given t's
      */
     private Map<Integer, Integer> calcSequenceRec(int n, int col) {
         if (col == 0) return sequence;
@@ -155,8 +169,7 @@ public class MemoizedSOS implements SOS {
     }
 
     /**
-     *
-     * @return
+     * @return simple visualisation of the matrix U
      */
     public String printMatrixU() {
         StringBuilder res = new StringBuilder();
@@ -178,43 +191,36 @@ public class MemoizedSOS implements SOS {
     }
 
     /**
-     *
-     * @return
+     * @return true, if K is in the solutions, false if K can't be build with the given sequence
      */
     public boolean checkK() {
         return solutionValues.contains(K);
     }
 
     /**
-     *
-     * @return
+     * @return the sum if you add all integers from the sequence
      */
     public int getSumS() {
         return sumS;
     }
 
-    /**
-     *
-     * @param fullList
-     * @return
-     */
-    public List<Integer> getTs(boolean fullList) {
-        return fullList ? new ArrayList<>(givenTs) : new ArrayList<>(calculatedTs);
+
+    @Override
+    public List<Integer> getTs(boolean calculatedList) {
+        return calculatedList ? new ArrayList<>(calculatedTs) : new ArrayList<>(givenTs);
     }
 
     /**
-     *
-     * @return
+     * @return all possible Ks, all possible sums you can build with the given sequence
      */
     public List<Integer> getSolutionValues() {
         return new ArrayList<>(solutionValues);
     }
 
     /**
-     *
-     * @param n
-     * @param s
-     * @return
+     * @param n the row of the Matrix U / represents the t's
+     * @param s the col of the Matrix U / represents the sum
+     * @return the value true or false of the field
      */
     public boolean getU(int n, int s) {
         return U[n][s];
@@ -222,7 +228,7 @@ public class MemoizedSOS implements SOS {
 
     @Override
     public int getnLength() {
-        return nLength;
+        return givenTs.size();
     }
 
     @Override
