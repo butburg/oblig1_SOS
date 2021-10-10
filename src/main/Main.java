@@ -68,7 +68,12 @@ public class Main {
                 System.out.print("Simple SOS INSTANCE " + ss.getnLength() + " " + ss.getK() + ": ");
                 ss.getTs().forEach(i -> System.out.print((i + " ")));
                 System.out.println();
-                System.out.println(ss.calculateU() ? "YES" : "NO");
+                boolean result = ss.calculateU();
+                System.out.println(result ? "YES" : "NO");
+                if (result) {
+                    ss.getU().forEach((key, value) -> System.out.print(value + "[" + key + "]" + " "));
+                    System.out.println();
+                }
             }
         }//end try
 

@@ -11,6 +11,7 @@ public class SimpleSOS {
     private final int nLength;
     private int K;
     private List<Integer> calculatedTs;
+    private Map<Integer, Integer> U = new TreeMap<>();
 
     /**
      * Sum of Selections
@@ -37,16 +38,26 @@ public class SimpleSOS {
 
 
     public boolean calculateU() {
-        return calculateURec(0, 0);
+        return calculateURec(0, 0, U);
     }
 
-    private boolean calculateURec(int index, int currentSum) {
-        if(index >= nLength){
+    private boolean calculateURec(int index, int currentSum, Map<Integer, Integer> result) {
+        if (index >= nLength) {
             return currentSum == K;
         }
-        return calculateURec(index+1, currentSum) || calculateURec(index+1, currentSum+calculatedTs.get(index));
+        if (calculateURec(index + 1, currentSum, result)) {
+            return calculateURec(index + 1, currentSum, result);
+        } else if (calculateURec(index + 1, currentSum + calculatedTs.get(index), result)) {
+            result.put(index + 1, calculatedTs.get(index));
+            return calculateURec(index + 1, currentSum + calculatedTs.get(index), result);
+        }
+        return false;
     }
 
+
+    public Map<Integer, Integer> getU() {
+        return U;
+    }
 
     public int getnLength() {
         return nLength;
@@ -60,7 +71,4 @@ public class SimpleSOS {
         return K;
     }
 
-    public void setK(int k) {
-        K = k;
-    }
 }

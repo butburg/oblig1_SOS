@@ -12,8 +12,8 @@ public class SOS {
     private final int sumS;
     private int K;
     private boolean[][] U;
-    private List<Integer> calculatedTs;
     private List<Integer> givenTs;
+    private List<Integer> calculatedTs;
     private List<Integer> solutionValues = new ArrayList<>();
     private List<Integer> selection = new ArrayList<>();
 
@@ -167,7 +167,4 @@ public class SOS {
         return K;
     }
 
-    public void setK(int k) {
-        K = k;
-    }
 }
