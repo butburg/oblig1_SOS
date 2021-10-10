@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -31,7 +32,7 @@ public class Main {
                     intRows.add(number);
                 }
                 if (!intRows.isEmpty()) {
-                    System.out.println("Reading: " + intRows);
+                    //System.out.println("Reading: " + intRows);
                     sosse.add(new SOS(intRows));
                 }
                 intRows.clear();
@@ -49,8 +50,10 @@ public class Main {
             printMatrix(s);
             System.out.println(s.checkK() ? "YES" : "NO");
             if (s.checkK()) {
-                System.out.println(s.backtrace());
-                printMatrix(s);
+                for (Map.Entry<Integer, Integer> e : s.backtrace().entrySet()){
+                    System.out.print(e.getValue() +"["+ e.getKey() + "]" + " ");
+                }
+                System.out.println();
             }
         }
 

@@ -1,9 +1,6 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.InputMismatchException;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -87,23 +84,22 @@ public class SOS {
         }
     }
 
-    public List<Integer> backtrace(){
-        List<Integer> sequence = new ArrayList<>();
+    public Map<Integer, Integer> backtrace() {
+        Map<Integer, Integer> sequence = new TreeMap<Integer, Integer>();
         int n = nLength;
         int col = K;
-        if (n < 1) throw new InputMismatchException("No solution that can be backtrace.");
-        return backtrace(sequence,n,col);
+        if (n < 1 || col >= U[0].length) throw new InputMismatchException("No solution that can be backtrace.");
+        return backtrace(sequence, n, col);
     }
 
-    public List<Integer> backtrace(List<Integer> sequence, int n, int col){
-        if(col == 0) return sequence;
+    public Map<Integer, Integer> backtrace(Map<Integer, Integer> sequence, int n, int col) {
+        if (col == 0) return sequence;
         if (!U[n][col]) return sequence;
-        while(U[n-1][col]){
-            n = n -1;
+        while (U[n - 1][col]) {
+            n = n - 1;
         }
-        System.out.println(givenTs.get(n-1));
-        sequence.add(givenTs.get(n-1));
-        return backtrace(sequence,n-1,col-givenTs.get(n-1));
+        sequence.put(n, givenTs.get(n - 1));
+        return backtrace(sequence, n - 1, col - givenTs.get(n - 1));
     }
 
 
