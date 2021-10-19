@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
  * <p>
  * according to task b)
  */
-public class SimpleSOS implements SOS {
+public class RecursiveSOS implements SOS {
 
     private final int nLength;
     private final int K;
@@ -27,7 +27,7 @@ public class SimpleSOS implements SOS {
      * @throws InputMismatchException if the instance are not in the correct form:
      *                                negative, n is not equal to  given sequence length
      */
-    public SimpleSOS(List<Integer> instance) throws InputMismatchException {
+    public RecursiveSOS(List<Integer> instance) throws InputMismatchException {
         //checks
         List<Integer> tempGivenTs = new ArrayList<>(instance);
         int tempK = tempGivenTs.remove(0);

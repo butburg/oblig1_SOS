@@ -49,7 +49,7 @@ public class Main {
                 }
                 if (!intRows.isEmpty()) {
                     //System.out.println("Reading: " + intRows);
-                    sosse.add(useSimpleSOS ? new SimpleSOS(intRows) : new MemoizedSOS(intRows));
+                    sosse.add(useSimpleSOS ? new RecursiveSOS(intRows) : new BottomUpSOS(intRows));
                 }
                 intRows.clear();
             }
@@ -84,7 +84,7 @@ public class Main {
                     System.out.println();
                     out.println();
                 }
-                if (s instanceof MemoizedSOS) System.out.println(((MemoizedSOS) s).printMatrixU(20));
+                if (s instanceof BottomUpSOS) System.out.println(((BottomUpSOS) s).printMatrixU(20));
                 System.out.println();
                 out.println();
             }

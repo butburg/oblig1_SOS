@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * The answer will occur in the bottom left corner(the col with index equal to K),
  * if this field is true, the K is part of the solution.
  */
-public class MemoizedSOS implements SOS {
+public class TopDownSOS implements SOS {
 
     private final int nLength;
     private final int sumS;
@@ -39,7 +39,7 @@ public class MemoizedSOS implements SOS {
      * @throws InputMismatchException if the instance are not in the correct form:
      *                                negative or n is not equal to given sequence length
      */
-    public MemoizedSOS(List<Integer> instance) throws InputMismatchException {
+    public TopDownSOS(List<Integer> instance) throws InputMismatchException {
         //checks
         List<Integer> tempGivenTs = new ArrayList<>(instance);
         int tempK = tempGivenTs.remove(0);
