@@ -25,7 +25,7 @@ public class TopDownSOS implements SOS {
     private final int nLength;
     private final int sumS;
     private final int K;
-    private boolean[][] U;
+    private int[][] U;
     private List<Integer> givenTs;
     private List<Integer> calculatedTs;
     private List<Integer> solutionValues = new ArrayList<>();
@@ -57,19 +57,23 @@ public class TopDownSOS implements SOS {
         this.calculatedTs = tempGivenTs.stream().filter(s -> s <= K).collect(Collectors.toList());
         nLength = this.calculatedTs.size(); //tempnLength;
         sumS = this.calculatedTs.stream().mapToInt(s -> s).sum(); // get S, sum of all ts
-        U = new boolean[nLength + 1][sumS + 1]; // build false table, add empty top row and add true zero col (with +1)
+        initTableUwithMinusOne(); // build false table, add empty top row and add true zero col (with +1)
 
     }
 
 
     @Override
     public boolean calculateSOS() {
-        calculateU();
-        if (checkK()) {
-            calculateSequence();
-            return true;
+        return calculateU() == 1;
+    }
+
+    private void initTableUwithMinusOne() {
+        U = new int[nLength + 1][K + 1];
+        for (int i = 1; i <= nLength; i++) {
+            for (int j = 1; j <= K; j++) {
+                U[i][j] = -1;
+            }
         }
-        return false;
     }
 
     /**
@@ -79,11 +83,10 @@ public class TopDownSOS implements SOS {
      *
      * @return a table U with dimension [n:S] and true or false entries, used for solution finding
      */
-    private boolean[][] calculateU() {
-        U[0][0] = true;
-        boolean[][] tableU = calculateURec(1, 0);
-        saveSolutions();
-        return tableU;
+    private Integer calculateU() {
+        //U[0][0] = 0;
+        return calculateURec(nLength, K);
+        //saveSolutions();
     }
 
     /**
@@ -98,89 +101,96 @@ public class TopDownSOS implements SOS {
      * @param s the actual col/sum value from 0 to the sum of all t's (e.g. t[1,2]: 0,1,2,3)
      * @return the true false matrix U
      */
-    private boolean[][] calculateURec(int n, int s) {
-        if (n > nLength) {
-            return U;
+    private Integer calculateURec(int n, int s) {
+        //System.out.println(n - 1 + "(n-1), " + s + "(s) ");
+        //System.out.println(printMatrixU(40));
+
+        if (s == 0) return 1;
+        if (n <= 0) return 0;
+
+        //already saved in table?
+        if (U[n - 1][s] != -1) {
+            return U[n - 1][s];
         }
-        if (s > sumS) return calculateURec(n + 1, 0);
 
-        if (calculatedTs.get(n - 1) > s) {//n bigger than s
-            U[n][s] = U[n - 1][s];//get from row above
-        } else {//field is the one row above minus value n
-            if (U[n - 1][s]) //if row above is true, also this one is true
-                U[n][s] = true;
-            else //else go n steps back an lock in row above if its true
-                U[n][s] = U[n - 1][s - calculatedTs.get(n - 1)];
-        }
-        return calculateURec(n, s + 1);
-    }
-
-
-    /**
-     * look up
-     * reads the table U, where ever in a col is at least one true,
-     * this number/index of the col can be build with the sequence of ts.
-     * so its part of the solution
-     */
-    public void saveSolutions() {
-        for (int s = 0; s <= sumS; s++) {
-            for (int i = 0; i <= nLength; i++) {
-                if (U[i][s]) {
-                    solutionValues.add(s);
-                    break;
-                }
+        if (calculatedTs.get(n - 1) > s) {
+            return U[n - 1][s] = calculateURec(n - 1, s);
+        } else {
+            if (calculateURec(n - 1, s) != 0 ||
+                    calculateURec(n - 1, s - calculatedTs.get(n - 1)) != 0) {
+                return U[n - 1][s] = 1;
+            } else {
+                return U[n - 1][s] = 0;
             }
         }
     }
 
-    /**
-     * check table u, in every col that has an true in only one row, it means the according number of the col can be
-     * build with a subset, so its a possible K
-     * call recursive method with inits that will save all possible solutions in sequence
-     */
-    public void calculateSequence() {
-        int n = nLength;
-        int col = K;
-        if (n < 1 || col >= U[0].length) throw new InputMismatchException("No solution that can be backtrace.");
-        calcSequenceRec(n, col);
-    }
-
-    /**
-     * the recursive method
-     *
-     * @param n   the actual row/index from or t's from n to 0
-     * @param col the actual col/sum value from the sum of all t's to 0
-     * @return a sequence with all values u can build with the given sequence / all possible Ks
-     * and there index from given t's
-     */
-    private Map<Integer, Integer> calcSequenceRec(int n, int col) {
-        if (col == 0) return sequence;
-        if (!U[n][col]) return sequence;
-        while (U[n - 1][col]) {
-            n = n - 1;
-        }
-        sequence.put(n, calculatedTs.get(n - 1));
-        return calcSequenceRec(n - 1, col - calculatedTs.get(n - 1));
-    }
-
-
-    public boolean[][] calculateUIterative() {
-        U[0][0] = true;//set S[0:0] to True, because 0 can be done with empty Sequence
-        for (int n = 1; n <= nLength; n++) {  //ignore first row, will always be false except the first entry, S[0:0] = 0 is always possible
-            for (int s = 0; s <= sumS; s++) { //loop cols in row
-                if (calculatedTs.get(n - 1) > s) {//n bigger than s
-                    U[n][s] = U[n - 1][s];//get from row above
-                } else {//field is the one row above minus value n
-                    if (U[n - 1][s]) //if row above is true, also this one is true
-                        U[n][s] = true;
-                    else //else go n steps back an lock in row above if its true
-                        U[n][s] = U[n - 1][s - calculatedTs.get(n - 1)];
-                }
-            }//for entry
-        }//for row
-        saveSolutions();
-        return U;
-    }
+//
+//    /**
+//     * look up
+//     * reads the table U, where ever in a col is at least one true,
+//     * this number/index of the col can be build with the sequence of ts.
+//     * so its part of the solution
+//     */
+//    public void saveSolutions() {
+//        for (int s = 0; s <= sumS; s++) {
+//            for (int i = 0; i <= nLength; i++) {
+//                if (U[i][s]) {
+//                    solutionValues.add(s);
+//                    break;
+//                }
+//            }
+//        }
+//    }
+//
+//    /**
+//     * check table u, in every col that has an true in only one row, it means the according number of the col can be
+//     * build with a subset, so its a possible K
+//     * call recursive method with inits that will save all possible solutions in sequence
+//     */
+//    public void calculateSequence() {
+//        int n = nLength;
+//        int col = K;
+//        if (n < 1 || col >= U[0].length) throw new InputMismatchException("No solution that can be backtrace.");
+//        calcSequenceRec(n, col);
+//    }
+//
+//    /**
+//     * the recursive method
+//     *
+//     * @param n   the actual row/index from or t's from n to 0
+//     * @param col the actual col/sum value from the sum of all t's to 0
+//     * @return a sequence with all values u can build with the given sequence / all possible Ks
+//     * and there index from given t's
+//     */
+//    private Map<Integer, Integer> calcSequenceRec(int n, int col) {
+//        if (col == 0) return sequence;
+//        if (!U[n][col]) return sequence;
+//        while (U[n - 1][col]) {
+//            n = n - 1;
+//        }
+//        sequence.put(n, calculatedTs.get(n - 1));
+//        return calcSequenceRec(n - 1, col - calculatedTs.get(n - 1));
+//    }
+//
+//
+//    public boolean[][] calculateUIterative() {
+//        U[0][0] = true;//set S[0:0] to True, because 0 can be done with empty Sequence
+//        for (int n = 1; n <= nLength; n++) {  //ignore first row, will always be false except the first entry, S[0:0] = 0 is always possible
+//            for (int s = 0; s <= sumS; s++) { //loop cols in row
+//                if (calculatedTs.get(n - 1) > s) {//n bigger than s
+//                    U[n][s] = U[n - 1][s];//get from row above
+//                } else {//field is the one row above minus value n
+//                    if (U[n - 1][s]) //if row above is true, also this one is true
+//                        U[n][s] = true;
+//                    else //else go n steps back an lock in row above if its true
+//                        U[n][s] = U[n - 1][s - calculatedTs.get(n - 1)];
+//                }
+//            }//for entry
+//        }//for row
+//        saveSolutions();
+//        return U;
+//    }
 
     /**
      * Use this function to see the matrix and easily understand the calculation.
@@ -190,15 +200,20 @@ public class TopDownSOS implements SOS {
     public String printMatrixU(int maximumSize) {
         StringBuilder res = new StringBuilder();
         if (sumS < maximumSize) {
-            res.append("n/s ");
+            res.append("n/s  ");
             for (int j = 0; j <= sumS; j++) {
                 res.append(String.format("%3d", j));
             }
             res.append("\n");
+            res.append(" ").append("[").append("0").append("]").append(":");
+            for (int j = 0; j <= K; j++) {
+                res.append(String.format("%3d", U[0][j]));
+            }
+            res.append("\n");
             for (int i = 1; i <= nLength; i++) {
-                res.append(calculatedTs.get(i - 1)).append("[").append(i).append("]").append(": ");
-                for (int j = 0; j <= sumS; j++) {
-                    res.append(U[i][j] ? "1  " : "0  ");
+                res.append(calculatedTs.get(i - 1)).append("[").append(i).append("]").append(":");
+                for (int j = 0; j <= K; j++) {
+                    res.append(String.format("%3d", U[i][j]));
                 }
                 res.append("\n");
             }
@@ -238,7 +253,7 @@ public class TopDownSOS implements SOS {
      * @param s the col of the Matrix U / represents the sum
      * @return the value true or false of the field
      */
-    public boolean getU(int n, int s) {
+    public Integer getU(int n, int s) {
         return U[n][s];
     }
 

@@ -48,8 +48,8 @@ public class Main {
                     intRows.add(number);
                 }
                 if (!intRows.isEmpty()) {
-                    //System.out.println("Reading: " + intRows);
-                    sosse.add(useSimpleSOS ? new RecursiveSOS(intRows) : new BottomUpSOS(intRows));
+                    System.out.println("Reading: " + intRows);
+                    sosse.add(useSimpleSOS ? new BottomUpSOS(intRows) : new TopDownSOS(intRows));
                 }
                 intRows.clear();
             }
@@ -85,7 +85,7 @@ public class Main {
                     out.println();
                 }
                 if (s instanceof BottomUpSOS) System.out.println(((BottomUpSOS) s).printMatrixU(20));
-                System.out.println();
+                //System.out.println();
                 out.println();
             }
         }//end try
