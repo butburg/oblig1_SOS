@@ -14,7 +14,7 @@ public class Main {
      * OR
      * task c), a top-down MemoizedSOS [false]
      */
-    static boolean useSimpleSOS = false;
+    static boolean useTopDownSOS = true;
 
     /**
      * The main method to start the programm
@@ -27,12 +27,6 @@ public class Main {
             System.out.println("Wrong number of command line arguments. 2 arguments needed. \nExample: >java main.Main inFile.txt outFile.txt");
             System.exit(1);
         }
-
-
-        //int gfg = GFG.subsetSum(new int[]{4, 2, 3}, 3,6);
-        //System.out.println(gfg);
-        //System.exit(0);
-
 
         String fileInput = args[0];
         String fileOutput = args[1];
@@ -54,8 +48,8 @@ public class Main {
                     intRows.add(number);
                 }
                 if (!intRows.isEmpty()) {
-                    System.out.println("Reading: " + intRows);
-                    sosse.add(useSimpleSOS ? new BottomUpSOS(intRows) : new TopDownSOS(intRows));
+                    //System.out.println("Reading: " + intRows);
+                    sosse.add(useTopDownSOS ? new TopDownSOS(intRows) : new BottomUpSOS(intRows));
                 }
                 intRows.clear();
             }

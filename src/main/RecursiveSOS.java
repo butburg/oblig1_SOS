@@ -28,6 +28,7 @@ public class RecursiveSOS implements SOS {
      *                                negative, n is not equal to  given sequence length
      */
     public RecursiveSOS(List<Integer> instance) throws InputMismatchException {
+        System.out.println("Init Recursive");
         //checks
         List<Integer> tempGivenTs = new ArrayList<>(instance);
         int tempK = tempGivenTs.remove(0);

@@ -6,29 +6,23 @@ import java.util.stream.Collectors;
 /**
  * @author github.com/butburg (EW) on Okt 2021
  * <p>
- * according to task c) and a)
+ * after feedback a new try to implement a proper memoized solution
  * <p>
  * The values of that table U explained:
- * the dimensions are accordingly to the excersice with [n]x[S]
+ * the dimensions are accordingly to the excersice with [n+1]x[S+1]
  * the col S will start with 0 and end with the sum of all t's in asc order(0,1,...,Sum(S))
- * <p>
- * The values mean different things, depending on the position
- * if a col with for example 3 have in at least one row a true, it means, that the 3 can
- * be build with a sub-sequence.
  * <p>
  * <p>
  * The answer will occur in the bottom left corner(the col with index equal to K),
- * if this field is true, the K is part of the solution.
+ * if this field is equal 1, the K is part of the solution.
  */
 public class TopDownSOS implements SOS {
 
     private final int nLength;
-    private final int sumS;
     private final int K;
     private int[][] U;
     private List<Integer> givenTs;
     private List<Integer> calculatedTs;
-    private List<Integer> solutionValues = new ArrayList<>();
     private Map<Integer, Integer> sequence = new TreeMap<>();
 
     /**
@@ -40,6 +34,7 @@ public class TopDownSOS implements SOS {
      *                                negative or n is not equal to given sequence length
      */
     public TopDownSOS(List<Integer> instance) throws InputMismatchException {
+        System.out.println("Init TopDown");
         //checks
         List<Integer> tempGivenTs = new ArrayList<>(instance);
         int tempK = tempGivenTs.remove(0);
@@ -55,10 +50,9 @@ public class TopDownSOS implements SOS {
         K = tempK;
         // sort out t bigger than k
         this.calculatedTs = tempGivenTs.stream().filter(s -> s <= K).collect(Collectors.toList());
-        nLength = this.calculatedTs.size(); //tempnLength;
-        sumS = this.calculatedTs.stream().mapToInt(s -> s).sum(); // get S, sum of all ts
-        initTableUwithMinusOne(); // build false table, add empty top row and add true zero col (with +1)
+        nLength = this.calculatedTs.size();
 
+        initTableUwithMinusOne(); // build U table, add false top row and add false col at beginning
     }
 
 
@@ -67,6 +61,9 @@ public class TopDownSOS implements SOS {
         return calculateU() == 1;
     }
 
+    /**
+     * init the table with -1, means not calculated, otherwise 0 (false) or 1 (true)
+     */
     private void initTableUwithMinusOne() {
         U = new int[nLength + 1][K + 1];
         for (int i = 1; i <= nLength; i++) {
@@ -77,32 +74,24 @@ public class TopDownSOS implements SOS {
     }
 
     /**
-     * will call the recursive method with init values, ignore first row(always false) that is only added
+     * will call the recursive method with init values, ignore first row(always false/0) that is only added
      * for the termination of the algorithm
-     * set U[0:0] to True, because the 0 can be done with an empty Sequence, means it have to return true
      *
-     * @return a table U with dimension [n:S] and true or false entries, used for solution finding
+     * @return a table U with dimension [n:S] and with -1, 0 or 1, used for solution finding
      */
     private Integer calculateU() {
         Integer result = calculateURec(nLength, K);
-        if(result == 1) {
+        if (result == 1) {
             calculateSequence();
         }
+        System.out.println(printMatrixU(300));
         return result;
-        //saveSolutions();
     }
 
     /**
-     * actual recursive method, when last n/row is reached stop. when last s/col/sum is reached, got to next
-     * col. copy the value to the same like the row is above until or actual t(the value from the
-     * actual row) is not bigger than col s.
-     * otherwise we check the field above, if its true we set the actual field also true.
-     * otherwise we check, if the field one above and s - t (sum minus the actual t) is true or false
-     * and set the actual field accordingly.
-     *
      * @param n the actual row/index from or t's from 1 to n
      * @param s the actual col/sum value from 0 to the sum of all t's (e.g. t[1,2]: 0,1,2,3)
-     * @return the true false matrix U
+     * @return the matrix U with -1, 0 or 1
      */
     private Integer calculateURec(int n, int s) {
         //System.out.println(n - 1 + "(n-1), " + s + "(s) ");
@@ -111,7 +100,7 @@ public class TopDownSOS implements SOS {
         if (s == 0) return 1;
         if (n <= 0) return 0;
 
-        //already saved in table?
+        //already saved in table? this is needed to call it memoized and can save some calculation steps
         if (U[n][s] != -1) {
             return U[n][s];
         }
@@ -130,24 +119,6 @@ public class TopDownSOS implements SOS {
         return U[n][s];
     }
 
-//
-//    /**
-//     * look up
-//     * reads the table U, where ever in a col is at least one true,
-//     * this number/index of the col can be build with the sequence of ts.
-//     * so its part of the solution
-//     */
-//    public void saveSolutions() {
-//        for (int s = 0; s <= sumS; s++) {
-//            for (int i = 0; i <= nLength; i++) {
-//                if (U[i][s]) {
-//                    solutionValues.add(s);
-//                    break;
-//                }
-//            }
-//        }
-//    }
-//
     /**
      * check table u, in every col that has an true in only one row, it means the according number of the col can be
      * build with a subset, so its a possible K
@@ -179,24 +150,6 @@ public class TopDownSOS implements SOS {
         return calcSequenceRec(n - 1, col - calculatedTs.get(n - 1));
     }
 
-//
-//    public boolean[][] calculateUIterative() {
-//        U[0][0] = true;//set S[0:0] to True, because 0 can be done with empty Sequence
-//        for (int n = 1; n <= nLength; n++) {  //ignore first row, will always be false except the first entry, S[0:0] = 0 is always possible
-//            for (int s = 0; s <= sumS; s++) { //loop cols in row
-//                if (calculatedTs.get(n - 1) > s) {//n bigger than s
-//                    U[n][s] = U[n - 1][s];//get from row above
-//                } else {//field is the one row above minus value n
-//                    if (U[n - 1][s]) //if row above is true, also this one is true
-//                        U[n][s] = true;
-//                    else //else go n steps back an lock in row above if its true
-//                        U[n][s] = U[n - 1][s - calculatedTs.get(n - 1)];
-//                }
-//            }//for entry
-//        }//for row
-//        saveSolutions();
-//        return U;
-//    }
 
     /**
      * Use this function to see the matrix and easily understand the calculation.
@@ -205,9 +158,9 @@ public class TopDownSOS implements SOS {
      */
     public String printMatrixU(int maximumSize) {
         StringBuilder res = new StringBuilder();
-        if (sumS < maximumSize) {
+        if (K < maximumSize) {
             res.append("n/s  ");
-            for (int j = 0; j <= sumS; j++) {
+            for (int j = 0; j <= K; j++) {
                 res.append(String.format("%3d", j));
             }
             res.append("\n");
@@ -227,32 +180,12 @@ public class TopDownSOS implements SOS {
         return res.toString();
     }
 
-    /**
-     * @return true, if K is in the solutions, false if K can't be build with the given sequence
-     */
-    public boolean checkK() {
-        return solutionValues.contains(K);
-    }
-
-    /**
-     * @return the sum if you add all integers from the sequence
-     */
-    public int getSumS() {
-        return sumS;
-    }
-
 
     @Override
     public List<Integer> getTs(boolean calculatedList) {
         return calculatedList ? new ArrayList<>(calculatedTs) : new ArrayList<>(givenTs);
     }
 
-    /**
-     * @return all possible Ks, all possible sums you can build with the given sequence
-     */
-    public List<Integer> getSolutionValues() {
-        return new ArrayList<>(solutionValues);
-    }
 
     /**
      * @param n the row of the Matrix U / represents the t's

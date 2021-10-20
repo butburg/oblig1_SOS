@@ -40,6 +40,7 @@ public class BottomUpSOS implements SOS {
      *                                negative or n is not equal to given sequence length
      */
     public BottomUpSOS(List<Integer> instance) throws InputMismatchException {
+        System.out.println("Init BottomUp");
         //checks
         List<Integer> tempGivenTs = new ArrayList<>(instance);
         int tempK = tempGivenTs.remove(0);
