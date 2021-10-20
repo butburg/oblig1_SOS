@@ -28,6 +28,12 @@ public class Main {
             System.exit(1);
         }
 
+
+        //int gfg = GFG.subsetSum(new int[]{4, 2, 3}, 3,6);
+        //System.out.println(gfg);
+        //System.exit(0);
+
+
         String fileInput = args[0];
         String fileOutput = args[1];
 
@@ -85,7 +91,7 @@ public class Main {
                     out.println();
                 }
                 if (s instanceof BottomUpSOS) System.out.println(((BottomUpSOS) s).printMatrixU(20));
-                //System.out.println();
+                System.out.println();
                 out.println();
             }
         }//end try

@@ -84,8 +84,11 @@ public class TopDownSOS implements SOS {
      * @return a table U with dimension [n:S] and true or false entries, used for solution finding
      */
     private Integer calculateU() {
-        //U[0][0] = 0;
-        return calculateURec(nLength, K);
+        Integer result = calculateURec(nLength, K);
+        if(result == 1) {
+            calculateSequence();
+        }
+        return result;
         //saveSolutions();
     }
 
@@ -109,20 +112,22 @@ public class TopDownSOS implements SOS {
         if (n <= 0) return 0;
 
         //already saved in table?
-        if (U[n - 1][s] != -1) {
-            return U[n - 1][s];
+        if (U[n][s] != -1) {
+            return U[n][s];
         }
 
         if (calculatedTs.get(n - 1) > s) {
-            return U[n - 1][s] = calculateURec(n - 1, s);
+            U[n][s] = calculateURec(n - 1, s);
         } else {
-            if (calculateURec(n - 1, s) != 0 ||
-                    calculateURec(n - 1, s - calculatedTs.get(n - 1)) != 0) {
-                return U[n - 1][s] = 1;
+            int excludeLastElem = calculateURec(n - 1, s);
+            int includeLastElem = calculateURec(n - 1, s - calculatedTs.get(n - 1));
+            if (excludeLastElem != 0 || includeLastElem != 0) {
+                U[n][s] = 1;
             } else {
-                return U[n - 1][s] = 0;
+                U[n][s] = 0;
             }
         }
+        return U[n][s];
     }
 
 //
@@ -143,36 +148,37 @@ public class TopDownSOS implements SOS {
 //        }
 //    }
 //
-//    /**
-//     * check table u, in every col that has an true in only one row, it means the according number of the col can be
-//     * build with a subset, so its a possible K
-//     * call recursive method with inits that will save all possible solutions in sequence
-//     */
-//    public void calculateSequence() {
-//        int n = nLength;
-//        int col = K;
-//        if (n < 1 || col >= U[0].length) throw new InputMismatchException("No solution that can be backtrace.");
-//        calcSequenceRec(n, col);
-//    }
-//
-//    /**
-//     * the recursive method
-//     *
-//     * @param n   the actual row/index from or t's from n to 0
-//     * @param col the actual col/sum value from the sum of all t's to 0
-//     * @return a sequence with all values u can build with the given sequence / all possible Ks
-//     * and there index from given t's
-//     */
-//    private Map<Integer, Integer> calcSequenceRec(int n, int col) {
-//        if (col == 0) return sequence;
-//        if (!U[n][col]) return sequence;
-//        while (U[n - 1][col]) {
-//            n = n - 1;
-//        }
-//        sequence.put(n, calculatedTs.get(n - 1));
-//        return calcSequenceRec(n - 1, col - calculatedTs.get(n - 1));
-//    }
-//
+    /**
+     * check table u, in every col that has an true in only one row, it means the according number of the col can be
+     * build with a subset, so its a possible K
+     * call recursive method with inits that will save all possible solutions in sequence
+     */
+    public void calculateSequence() {
+        int n = nLength;
+        int col = K;
+        if (n < 1 || col >= U[0].length) throw new InputMismatchException("No solution that can be backtrace.");
+        calcSequenceRec(n, col);
+    }
+
+    /**
+     * the recursive method
+     *
+     * @param n   the actual row/index from or t's from n to 0
+     * @param col the actual col/sum value from the sum of all t's to 0
+     * @return a sequence with all values u can build with the given sequence / all possible Ks
+     * and there index from given t's
+     */
+    private Map<Integer, Integer> calcSequenceRec(int n, int col) {
+        if (col == 0) return sequence;
+        if (U[n][col] == -1) return sequence;
+
+        while (U[n - 1][col] != 0) {
+            n = n - 1;
+        }
+        sequence.put(n, calculatedTs.get(n - 1));
+        return calcSequenceRec(n - 1, col - calculatedTs.get(n - 1));
+    }
+
 //
 //    public boolean[][] calculateUIterative() {
 //        U[0][0] = true;//set S[0:0] to True, because 0 can be done with empty Sequence
